@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Generatore Ingredienti - Felix Felicis</title>
+    <!-- FontAwesome per le icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-main: #0c0d14; --bg-card: #151722; --gold-primary: #d4af37; --text-main: #e8e9f2; --text-muted: #9a9cb3; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: var(--text-main); padding: 2rem; }
+        .header-section { text-align: center; margin-bottom: 2rem; }
+        .card { background: var(--bg-card); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 16px; padding: 1.8rem; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        h1 { color: var(--gold-primary); font-family: 'Cinzel', serif; margin-bottom: 0.5rem; }
+        h2 { color: var(--gold-primary); font-family: 'Cinzel', serif; margin-bottom: 1rem; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 10px 0; background: #08090e; border: 1px solid var(--gold-primary); color: white; border-radius: 6px; }
+        .btn { background: linear-gradient(135deg, #d4af37, #997a15); color: #000; font-weight: 700; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
+        .bbcode-box { background: #050608; border: 1px solid #10b981; padding: 10px; color: #10b981; font-family: monospace; margin: 10px 0; white-space: pre-wrap; font-size: 0.9rem; }
+        /* Link senza box */
+        .manual-links { text-align: center; margin-bottom: 2rem; color: var(--text-muted); }
+        .manual-links a { color: var(--gold-primary); text-decoration: none; font-weight: bold; margin: 0 15px; transition: opacity 0.2s; }
+        .manual-links a:hover { opacity: 0.8; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <h1>Ricerca casuale degli Ingredienti del Regno Unito</h1>
+    </div>
+    <!-- Link senza box -->
+    <div class="manual-links">
+        <p style="margin-bottom: 10px;">
+            <i class="fa-solid fa-book-open"></i> Per maggiori informazioni consulta i Manuali:
+        </p>
+        <a href="https://felixfelicisharrypottergdr.forumfree.it/?t=80892572#guida" target="_blank">Manuale degli Ingredienti</a>
+        <a href="https://felixfelicisharrypottergdr.forumfree.it/?t=80407080" target="_blank">Guida alla Ricerca Casuale degli Ingredienti</a>
+    </div>
+
+    <div class="card">
+        <h2>Fase 1: Lancio Dadi (Ricerca)</h2>
+        <label>Post fatti nella role:</label>
+        <input type="number" id="posts" value="1" min="1" max="10">
+        <label>Tipologia PG:</label>
+        <select id="type">
+            <option value="studente">Studente che non segue CDCM</option>
+            <option value="studente_cdcm">Studente che segue CDCM</option>
+            <option value="adulto_no">Adulto senza Sapienze affini</option>
+            <option value="magiz_erb_poz">Adulto con una Sapienza affine</option>
+            <option value="all">Adulto con tutte le Sapienze affini</option>
+        </select>
+        <button class="btn" onclick="fase1()">Genera Codice per il Forum</button>
+        <div id="out1"></div>
+    </div>
+
+    <div class="card" id="card2" style="display:none">
+        <h2>Fase 2: Determinazione Rarità</h2>
+        <p>Inserisci qui i risultati dei dadi ottenuti dal forum (es. 10, 45, 80):</p>
+        <textarea id="results1" rows="3"></textarea>
+        <button class="btn" onclick="fase2()">Analizza e genera 2° Gruppo</button>
+        <div id="out2"></div>
+    </div>
+
+    <div class="card" id="card3" style="display:none">
+        <h2>Fase 3: Identificazione Finale</h2>
+        <p>Inserisci i risultati del 2° lancio per ogni categoria:</p>
+        <div id="input3"></div>
+        <button class="btn" onclick="fase3()">Rivela Ingredienti</button>
+        <div id="out3" class="bbcode-box" style="margin-top:20px;"></div>
+    </div>
+
+    <script>
+        const DB = {
+            "X": ["Aculeo di Istrice", "Ala di Pipistrello", "Ala di Scriber", "Antenna di Duckbill", "Artiglio di Duckbill", "Bacca di Agrifoglio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Bacca di Alloro", "Bacca di Belladonna <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Bacca di Vischio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Bezoar", "Bile di Armadillo", "Bruco Peloso Carnivoro", "Bulbo di Bucaneve <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Cervello di Rana", "Coda di Topo", "Corteccia di Alloro", "Crine di Hanabira", "Cuore di Coccodrillo", "Fagiolo Sopoforoso <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Fico", "Fiore di Aloe", "Fiore di Asfodelo <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Fiore di Belladonna <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Fiore di Bucaneve <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Fiore di Dittamo", "Fiore di Hanabira", "Fiore di Lavanda", "Foglia di Agrifoglio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Alloro", "Foglia di Aloe", "Foglia di Artemisia", "Foglia di Assenzio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Belladonna <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Brugmansia <i class='fa-solid fa-ban'></i>", "Foglia di Centinodia", "Foglia di Cicuta <i class='fa-solid fa-ban'></i>", "Foglia di Coclearia", "Foglia di Dittamo", "Foglia di Erba Fondente", "Foglia di Levistico", "Foglia di Menta Piperita", "Foglia di Ortica <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Salvia", "Foglia di Starnutaria <i class='fa-solid fa-ban'></i>", "Foglia di Vischio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Guscio di Shellusk", "Lacrima di Birdengold", "Latte di Marmite", "Legno di Alloro", "Milza di Lucertola", "Milza di Pipistrello", "Milza di Topo", "Mosca Crisopa", "Muco di Lombrico", "Muco di Vermicolo", "Occhio di Anguilla", "Occhio di Pesce palla", "Occhio di Scarabeo", "Olio di Ricino <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Olio di Rosa", "Olio di Valeriana", "Olio di Verbena <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Olio essenziale di Artemisia", "Pelle di Girilacco", "Pelo di Duriccio", "Petalo di Aconito <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Petalo di Hanabira", "Petalo di Sanguinaria", "Petalo di Verbena <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Piuma di Birdengold", "Polvere di perla", "Polvere di Shellusk", "Radice di Artemisia", "Radice di Asfodelo <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Radice di Assenzio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Radice di Valeriana", "Radice di Zenzero", "Ragno", "Rametto di Aconito <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Rametto di Menta Piperita", "Rametto di Valeriana", "Sanguisuga", "Semino di Papavero", "Spina di Duriccio", "Spina di Pesce leone", "Spina di Rosa", "Succo di Aloe", "Succo di Horklump", "Testa di Papavero", "Torace di Libellula", "Zanna di Drakul <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Zanna di Serpente"],
+            "XX": ["Ala di Fata", "Bava di Ghoul", "Bava di Lumaca Carnivora", "Bulbo di Bulbo Balzellante", "Foglia di Alioto <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Giaggiolo Puzzolente", "Formicaleone", "Frutto di Giaggiolo Puzzolente", "Fungo Saltellante", "Melma di Frullobulbo", "Muco di Gnomo", "Muco di Porlock", "Pelo di Porlock", "Petalo di Giunchiglia strombazzante", "Petalo di Grinzafico", "Piuma di Diricawl", "Piuma di Jobberknoll", "Polvere di Fata <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Radigorda", "Secrezione di Bundimun", "Squama di Ippocampo", "Stelo di Giunchiglia strombazzante", "Sterco di Mooncalf", "Succo di Grinzafico", "Tentacolo di Frullobulbo", "Unghia di Clabbert", "Unghia di Gnomo", "Uovo di Ippocampo", "Zanna di Avvincino <i class='fa-solid fa-ban'></i>", "Zanna di Chizpurfle"],
+            "XXX": ["Aculeo di Knarl", "Ala di Doxy", "Ala di Pixie", "Appendice di Purvincolo", "Artiglio di Ippogrifo", "Cappello di Fungo Scoppiettante", "Cenere di Ashwinder", "Coda di Malacaw Maculato", "Fagiolo Corridore", "Fango di Sblorb", "Fertilizzante di Arbusto Autofertilizzante", "Fiore di Cespuglio Farfallino", "Fiore di Cespuglio Spinoso", "Fiore di Geranio Zannuto", "Foglia di Arbusto Autofertilizzante", "Foglia di Cavolo Carnivoro Cinese", "Foglia di Cespuglio Farfallino", "Fungo Allucinogeno <i class='fa-solid fa-ban'></i>", "Germoglio di Bubotubero", "Latte maledetto di Nogtail <i class='fa-solid fa-ban'></i>", "Melassa di Glumbumble", "Muco di Streeler", "Muschio del Sud", "Ossigeno di Pianta Magica", "Pelle di Moke", "Pelo di Doxy", "Pelo di orecchie del Pogrebin", "Pelo di Puffskein", "Pelo di Snaso", "Petalo di Pianta Stridula", "Piuma di Fwooper", "Piuma di Ippogrifo", "Puffagiolo", "Pungiglione di Billywig", "Pus di Bubotubero <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Puzzalinfa di Mimbulus Mimbletonia", "Radice di Bubotubero", "Saliva di Jarvey", "Sangue di Salamandra <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Spina di Cespuglio Spinoso", "Squama di Plimpi", "Unghia di Kneazle", "Unghia di Snaso", "Uovo di Ashwinder", "Uovo di Doxy", "Veleno di Billywig <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Veleno di Doxy <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Veleno di Lobalug <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Zanna di Geranio Zannuto"],
+            "XXXX": ["Acqua di testa di Kappa", "Artiglio di Grifone", "Artiglio di Matagot", "Bacca di Balzar", "Cenere di Pianta di Seme di Fuoco", "Corno di Bicorno", "Corno di Graphorn", "Corno di Unicorno", "Crine di Cavallo Alato", "Crine di Thestral", "Crine di Unicorno", "Dito di Erkling", "Essenza di Ruta <i class='fa-solid fa-ban'></i>", "Estratto di Mandragola", "Estratto di Moly", "Fiore di Canterose <i class='fa-solid fa-ban'></i>", "Fiore di Erba Stregata <i class='fa-solid fa-ban'></i>", "Fiore di Primula Veris", "Fiore Fabula", "Foglia di Erba Stregata <i class='fa-solid fa-ban'></i>", "Foglia di Felce Imitante <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Mandragola", "Frutto di Erba Stregata <i class='fa-solid fa-ban'></i>", "Fumo di Pianta Fumogena", "Lacrima di Fenice <i class='fa-solid fa-ban'></i>", "Miele di Primula Veris", "Muco di Troll", "Petalo di Fiore Floo", "Petalo di Moly", "Petalo di Ruta <i class='fa-solid fa-ban'></i>", "Pistillo di Moly", "Pistillo di Primula Veris", "Piuma di Fenice", "Piuma di Grifone", "Radice di Mandragola", "Radice di Ruta <i class='fa-solid fa-ban'></i>", "Sangue di Unicorno <i class='fa-solid fa-ban'></i>", "Spina di Canterose <i class='fa-solid fa-ban'></i>", "Stelo di Moly", "Stelo di Ruta <i class='fa-solid fa-ban'></i>", "Veleno di Velenottero <i class='fa-solid fa-flask-vial'></i> ✔", "Zanna di Pianta Vampiro"],
+            "XXXXX": ["Aculeo di Tentacula Velenosa <i class='fa-solid fa-ban'></i>", "Algabranchia", "Algabranchia", "Amaralinfa di Amarantacea", "Artiglio di Drago", "Baccello di Pugnacio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Baccello di Tentacula Velenosa <i class='fa-solid fa-ban'></i>", "Capello di Ninfa dei Boschi", "Capello di Veela", "Cenere dell'Albero di Cenere", "Corda di cuore di Drago", "Corteccia dell'Albero della Vita", "Corteccia di Platano Picchiatore <i class='fa-solid fa-ban'></i>", "Fiore di Tentacula Velenosa <i class='fa-solid fa-ban'></i>", "Foglia di Amarantacea", "Foglia di Platano Picchiatore <i class='fa-solid fa-ban'></i>", "Foglia di Pugnacio <i class='fa-solid fa-ban'></i>", "Frutto dell'Albero della Vita", "Lacrima di Banshee", "Legno di Platano Picchiatore <i class='fa-solid fa-ban'></i>", "Mela dell'Albero di Biancaneve <i class='fa-solid fa-ban'></i>", "Pece di Platano Picchiatore <i class='fa-solid fa-ban'></i>", "Pelle di Drago <i class='fa-solid fa-flask-vial'></i> ✔", "Petalo dell'Albero della Vita <i class='fa-solid fa-ban'></i>", "Radice di Amarantacea", "Radice di Platano Picchiatore <i class='fa-solid fa-ban'></i>", "Radice di Rampicante Capovolto <i class='fa-solid fa-ban'></i>", "Ramo dell'Albero Medusa <i class='fa-solid fa-ban'></i>", "Saliva di Kelpie", "Sangue di Vampiro <i class='fa-solid fa-flask-vial'></i> ✔", "Spina di Pugnacio <i class='fa-solid fa-ban'></i>", "Succo del Baccello di Pugnacio <i class='fa-solid fa-flask-vial'></i> ✔", "Veleno dell'Albero Medusa <i class='fa-solid fa-ban'></i>", "Veleno di Acromantula <i class='fa-solid fa-flask-vial'></i> ✔", "Veleno di Manticora <i class='fa-solid fa-flask-vial'></i> ✔", "Veleno di Tentacula Velenosa <i class='fa-solid fa-flask-vial'></i> ✔", "Viticcio di Tranello del Diavolo <i class='fa-solid fa-ban'></i>"]
+        };
+
+        const ODDS = {
+            "studente": { "X": [26,50], "XX": [13,25], "XXX": [6,12], "XXXX": [2,5], "XXXXX": [1,1] },
+            "studente_cdcm": { "X": [37,60], "XX": [23,36], "XXX": [11,22], "XXXX": [3,10], "XXXXX": [1,2] },
+            "adulto_no": { "X": [48,70], "XX": [33,47], "XXX": [16,32], "XXXX": [4,15], "XXXXX": [1,3] },
+            "magiz_erb_poz": { "X": [59,80], "XX": [43,58], "XXX": [21,42], "XXXX": [5,20], "XXXXX": [1,4] },
+            "all": { "X": [70,90], "XX": [53,69], "XXX": [26,52], "XXXX": [6,25], "XXXXX": [1,5] }
+        };
+
+        function fase1() {
+            let p = Math.min(parseInt(document.getElementById('posts').value), 10);
+            let s = 100 - p;
+            document.getElementById('out1').innerHTML = `<div class="bbcode-box">[dice=${p}d${s}]Ricerca Ingredienti[/dice]</div>`;
+            document.getElementById('card2').style.display = 'block';
+        }
+
+        function fase2() {
+            let esiti = document.getElementById('results1').value.split(',').map(n => parseInt(n.trim()));
+            let type = document.getElementById('type').value;
+            let counts = { "X": 0, "XX": 0, "XXX": 0, "XXXX": 0, "XXXXX": 0 };
+
+            esiti.forEach(e => {
+                for (let tier in ODDS[type]) {
+                    if (e >= ODDS[type][tier][0] && e <= ODDS[type][tier][1]) counts[tier]++;
+                }
+            });
+
+            let html = "<h4>Codici da lanciare (2° Gruppo):</h4>";
+            let inputs = "";
+            for (let t in counts) {
+                if (counts[t] > 0) {
+                    html += `<div class="bbcode-box">[dice=${counts[t]}d${DB[t].length}]${t}[/dice]</div>`;
+                    for(let i=0; i<counts[t]; i++) inputs += `<div>${t} (esito dado): <input type="number" class="final-res" data-cat="${t}"></div>`;
+                }
+            }
+            document.getElementById('out2').innerHTML = html;
+            document.getElementById('input3').innerHTML = inputs;
+            document.getElementById('card3').style.display = 'block';
+        }
+
+        function fase3() {
+            let results = document.querySelectorAll('.final-res');
+            let output = "RISULTATI RACCOLTA:\n";
+            results.forEach(r => {
+                let cat = r.dataset.cat;
+                let val = parseInt(r.value) - 1;
+
+                // Controllo se il valore esiste nel database
+                let ingredient = DB[cat][val];
+                let displayValue = (ingredient !== undefined) ? ingredient : "nulla!";
+
+                let tempDiv = document.createElement('div');
+                tempDiv.innerHTML = displayValue;
+                output += `- ${cat}: ${tempDiv.innerHTML}\n`;
+            });
+            document.getElementById('out3').innerHTML = output.replace(/\n/g, '<br>');
+        }
+    </script>
+</body>
+</html>
