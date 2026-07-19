@@ -27,7 +27,7 @@
     <div class="header-section">
         <h1>Ricerca casuale degli Ingredienti del Regno Unito</h1>
     </div>
-    <!-- Link senza box -->
+    
     <div class="manual-links">
         <p style="margin-bottom: 10px;">
             <i class="fa-solid fa-book-open"></i> Per maggiori informazioni consulta i Manuali:
@@ -69,6 +69,8 @@
     </div>
 
     <script>
+        let expectedDice = 0;
+
         const DB = {
             "X": ["Aculeo di Istrice", "Ala di Pipistrello", "Ala di Scriber", "Antenna di Duckbill", "Artiglio di Duckbill", "Bacca di Agrifoglio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Bacca di Alloro", "Bacca di Belladonna <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Bacca di Vischio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Bezoar", "Bile di Armadillo", "Bruco Peloso Carnivoro", "Bulbo di Bucaneve <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Cervello di Rana", "Coda di Topo", "Corteccia di Alloro", "Crine di Hanabira", "Cuore di Coccodrillo", "Fagiolo Sopoforoso <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Fico", "Fiore di Aloe", "Fiore di Asfodelo <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Fiore di Belladonna <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Fiore di Bucaneve <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Fiore di Dittamo", "Fiore di Hanabira", "Fiore di Lavanda", "Foglia di Agrifoglio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Alloro", "Foglia di Aloe", "Foglia di Artemisia", "Foglia di Assenzio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Belladonna <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Brugmansia <i class='fa-solid fa-ban'></i>", "Foglia di Centinodia", "Foglia di Cicuta <i class='fa-solid fa-ban'></i>", "Foglia di Coclearia", "Foglia di Dittamo", "Foglia di Erba Fondente", "Foglia di Levistico", "Foglia di Menta Piperita", "Foglia di Ortica <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Salvia", "Foglia di Starnutaria <i class='fa-solid fa-ban'></i>", "Foglia di Vischio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Guscio di Shellusk", "Lacrima di Birdengold", "Latte di Marmite", "Legno di Alloro", "Milza di Lucertola", "Milza di Pipistrello", "Milza di Topo", "Mosca Crisopa", "Muco di Lombrico", "Muco di Vermicolo", "Occhio di Anguilla", "Occhio di Pesce palla", "Occhio di Scarabeo", "Olio di Ricino <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Olio di Rosa", "Olio di Valeriana", "Olio di Verbena <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Olio essenziale di Artemisia", "Pelle di Girilacco", "Pelo di Duriccio", "Petalo di Aconito <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Petalo di Hanabira", "Petalo di Sanguinaria", "Petalo di Verbena <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Piuma di Birdengold", "Polvere di perla", "Polvere di Shellusk", "Radice di Artemisia", "Radice di Asfodelo <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Radice di Assenzio <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Radice di Valeriana", "Radice di Zenzero", "Ragno", "Rametto di Aconito <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Rametto di Menta Piperita", "Rametto di Valeriana", "Sanguisuga", "Semino di Papavero", "Spina di Duriccio", "Spina di Pesce leone", "Spina di Rosa", "Succo di Aloe", "Succo di Horklump", "Testa di Papavero", "Torace di Libellula", "Zanna di Drakul <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Zanna di Serpente"],
             "XX": ["Ala di Fata", "Bava di Ghoul", "Bava di Lumaca Carnivora", "Bulbo di Bulbo Balzellante", "Foglia di Alioto <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Foglia di Giaggiolo Puzzolente", "Formicaleone", "Frutto di Giaggiolo Puzzolente", "Fungo Saltellante", "Melma di Frullobulbo", "Muco di Gnomo", "Muco di Porlock", "Pelo di Porlock", "Petalo di Giunchiglia strombazzante", "Petalo di Grinzafico", "Piuma di Diricawl", "Piuma di Jobberknoll", "Polvere di Fata <i class='fa-solid fa-ban'></i> (<i class='fa-solid fa-flask-vial'></i> ✔)", "Radigorda", "Secrezione di Bundimun", "Squama di Ippocampo", "Stelo di Giunchiglia strombazzante", "Sterco di Mooncalf", "Succo di Grinzafico", "Tentacolo di Frullobulbo", "Unghia di Clabbert", "Unghia di Gnomo", "Uovo di Ippocampo", "Zanna di Avvincino <i class='fa-solid fa-ban'></i>", "Zanna di Chizpurfle"],
@@ -86,17 +88,25 @@
         };
 
         function fase1() {
-            let p = Math.min(parseInt(document.getElementById('posts').value), 10);
+            expectedDice = Math.min(parseInt(document.getElementById('posts').value), 10);
+            let p = expectedDice;
             let s = 100 - p;
             document.getElementById('out1').innerHTML = `<div class="bbcode-box">[dice=${p}d${s}]Ricerca Ingredienti[/dice]</div>`;
             document.getElementById('card2').style.display = 'block';
         }
 
         function fase2() {
-            let esiti = document.getElementById('results1').value.split(',').map(n => parseInt(n.trim()));
+            let inputString = document.getElementById('results1').value;
+            let esiti = inputString.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+            
+            if (esiti.length !== expectedDice) {
+                alert("Errore: hai lanciato " + expectedDice + " dadi, ma hai inserito " + esiti.length + " risultati.");
+                return;
+            }
+
             let type = document.getElementById('type').value;
             let counts = { "X": 0, "XX": 0, "XXX": 0, "XXXX": 0, "XXXXX": 0 };
-
+            
             esiti.forEach(e => {
                 for (let tier in ODDS[type]) {
                     if (e >= ODDS[type][tier][0] && e <= ODDS[type][tier][1]) counts[tier]++;
@@ -122,16 +132,13 @@
             results.forEach(r => {
                 let cat = r.dataset.cat;
                 let val = parseInt(r.value) - 1;
-
-                // Controllo se il valore esiste nel database
-                let ingredient = DB[cat][val];
-                let displayValue = (ingredient !== undefined) ? ingredient : "nulla!";
-
-                let tempDiv = document.createElement('div');
-                tempDiv.innerHTML = displayValue;
-                output += `- ${cat}: ${tempDiv.innerHTML}\n`;
+                
+                // Prendiamo il valore grezzo dal DB senza creare elementi HTML
+                let displayValue = (DB[cat] && DB[cat][val] !== undefined) ? DB[cat][val] : "nulla!";
+                
+                output += `- ${cat}: ${displayValue}\n`;
             });
-            document.getElementById('out3').innerHTML = output.replace(/\n/g, '<br>');
+            document.getElementById('out3').innerText = output;
         }
     </script>
 </body>
